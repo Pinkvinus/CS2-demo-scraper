@@ -1,7 +1,11 @@
 import cloudscraper
+import re
+import time
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
+
+url = "https://csstats.gg"
 
 def get_cookie():
     cookie_str=""
@@ -9,6 +13,7 @@ def get_cookie():
     if cookie_str == "":
         print("Err: Cookie string not found")
         exit(1)
+
 
     command, cookies = cookie_str.split(':')
 
@@ -18,6 +23,7 @@ def get_cookie():
         elem = i.split('=')
 
         cookies[elem[0].strip()]=elem[1]
+    
     return command, cookies
 
 # Reads the contents of the secret cookie.txt file, so the cookie isn't shared on github
@@ -42,19 +48,20 @@ headers = {
     "Cookie": "; ".join([f"{k}={v}" for k, v in cookies.items()])  # Convert cookies dictionary to a string
 }
 
-
 def get_scraper():
     scraper = cloudscraper.create_scraper()
     scraper.headers.update(headers) 
 
     return scraper
 
+def get_html(url):
+    scraper = get_scraper()
+    return scraper.get(url).text
+
 
 def url_2_file(url, filename):
-    scraper = cloudscraper.create_scraper()
     f = open("./tmp/"+filename+".html", "w")
-    scraper.headers.update(headers)
-    f.write(scraper.get(url).text)
+    f.write(get_html(url))
 
 def get_steam_link(url):
     # Send the GET request
@@ -66,16 +73,48 @@ def get_steam_link(url):
     steam_link = response.headers.get('Location')
 
     if steam_link and steam_link.startswith("steam://"):
-        print("Steam link found:", steam_link)
-    else:
-        print("No Steam link in headers or other issue encountered.")
-    return steam_link
+        return steam_link, scraper
 
-#url_2_file("https://csstats.gg/match/221017699", "match1")
+    print("No Steam link in headers or other issue encountered.")
+    exit(1)
 
-url = "https://csstats.gg"
-match_url = "/match/221017699/watch/4adf23a35296450a0b5eef369c0c9d9133be1966abaadda8cba82491e0b2f631"
+def single_lookup_html(html:str, search_word:str):
+    for line in html.splitlines():
+         if search_word in line:
+            match = re.search(r'href="([^"]+)"', line)
+            if match:
+                link = match.group(1)
+                return url+link
+    return ""
+
+def get_watch_demo_url(arg:str):
+    """
+        As argument it can either take a match link or html. If match link is given then
+    """
+
+    if not "\n" in arg and not "\r\n" in arg:
+        arg = get_html(arg)
+
+    return single_lookup_html(arg, "/watch/")
+
+class Player:
+    def __init__(self, username, link, isBanned):
+        ...
 
 
-#url_2_file(url+match_url, "response")
-get_steam_link(url+match_url)
+def get_players():
+    ...
+
+match_url = "https://csstats.gg/match/221226336"
+
+html = get_html(match_url)
+print(get_steam_link(get_watch_demo_url(match_url))[0])
+
+
+
+
+
+
+
+
+

@@ -8,7 +8,7 @@ in pkgs.mkShell {
     (pkgs.python3.withPackages (python-pkgs: [
       # select Python packages here
       python-pkgs.cloudscraper
-      python-pkgs.Requests
+      python-pkgs.requests
       python-pkgs.requests_toolbelt
     ]))
   ];

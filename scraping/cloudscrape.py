@@ -206,11 +206,11 @@ def get_matches_from_player(player_id):
                 results += 1
     match_hrefs = []
     for row in rows:
+        if results == 0:
+            break
         match = re.search(r"(/match/\d+)", row["onclick"])
         match_hrefs.append(match.group(1))
         results -= 1
-        if results == 0:
-            break
     return match_hrefs
 
 

@@ -125,11 +125,22 @@ def get_players_from_match(html:str):
 
     print(players)
 
-def get_matches_from_all_matches():
+def get_matches_from_all_matches(url):
     """
-        Takes the html from the all matches page and returns a list of matches.
+        Takes the html from the all matches page and returns a list of match hrefs.
+        csstats.gg + one of these hrefs will go to match page.
     """
-    ...
+    html = get_html(url)
+    soup = BeautifulSoup(html, 'html.parser')
+    table = soup.find("table", class_="table-striped")
+    table_body = table.findChild("tbody")
+    rows = table_body.find_all(['tr'])
+    match_hrefs = []
+    for row in rows:
+        match = re.search(r"(/match/\d+)", row["onclick"])
+        match_hrefs.append(match.group(1))
+    print(match_hrefs)
+    return match_hrefs
 
 def get_matches_from_player():
     """
@@ -142,11 +153,12 @@ def get_matches_from_player():
 
 
 match_url = "https://csstats.gg/match/218583641"
+all_matches_url = "https://csstats.gg/match"
 
-
-html = get_html(match_url)
+get_matches_from_all_matches(all_matches_url)
+# html = get_html(match_url)
 #print(html)
-html = get_players_from_match(html)
+# html = get_players_from_match(html)
 #html_2_file(html, "match_cheater_condensed")
 
 

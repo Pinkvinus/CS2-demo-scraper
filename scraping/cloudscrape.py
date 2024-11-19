@@ -64,6 +64,10 @@ def url_2_file(url, filename):
     f.write(get_html(url))
 
 def get_steam_link(url):
+    """
+        arg: A match watch demo url
+        return: the steam link and the scraper used
+    """
     # Send the GET request
     scraper = get_scraper()
     response = scraper.get(url, allow_redirects=False)  # Disable redirects to capture original headers
@@ -76,9 +80,14 @@ def get_steam_link(url):
         return steam_link, scraper
 
     print("No Steam link in headers or other issue encountered.")
-    exit(1)
+    return "", scraper
 
 def single_lookup_html(html:str, search_word:str):
+    """"
+        Takes an html string and a search word as an argument.
+
+        returns the line of html with the first hit
+    """
     for line in html.splitlines():
          if search_word in line:
             match = re.search(r'href="([^"]+)"', line)
@@ -97,24 +106,31 @@ def get_watch_demo_url(arg:str):
 
     return single_lookup_html(arg, "/watch/")
 
-class Player:
-    def __init__(self, username, link, isBanned):
-        ...
-
-
-def get_players():
+def get_players_from_match():
+    """
+        Takes the html string from a match site and returns a list of tuples. 
+        
+        The tuple contains the csstats id, the username, and a boolean determining whether a user has been vac banned.
+    """
     ...
+
+def get_matches_from_all_matches():
+    """
+        Takes the html from the all matches page and returns a list of matches.
+    """
+    ...
+
+def get_matches_from_player():
+    """
+        Takes the html string from a player site
+        
+        Returns a list of tuples.  of cs stats match ids, that have been played in the last 30 days.
+    """
+
+
+
 
 match_url = "https://csstats.gg/match/221226336"
 
 html = get_html(match_url)
 print(get_steam_link(get_watch_demo_url(match_url))[0])
-
-
-
-
-
-
-
-
-

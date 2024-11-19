@@ -115,15 +115,50 @@ def get_players_from_match(html:str):
     """
         Takes the html string from a match site and returns a list of tuples. 
         
-        The tuple contains the csstats id, the username, and a boolean determining whether a user has been vac banned.
+        the tuples describe the players id, username, and ban status. 
+        The list is ordered in terms of teams. Splitting the list in half will
+        reveal the two opposing teams.
     """
     soup = BeautifulSoup(html, 'html.parser')
     #scoreboard = soup.find('table', id='match-scoreboard')
     scoreboard = soup.find('table', class_="scoreboard", id="match-scoreboard")
-    players = scoreboard.find_all('a')
-    
+    teams = scoreboard.find_all('tbody')
 
-    print(players)
+    teams = [teams[0], teams[2]]
+
+    player_info = []
+
+    for team in teams:
+
+        players = team.find_all('tr')
+
+        #players = list(team.children)
+        for player in players:
+
+            link = player.find('a')
+
+            if link is None or len(link) == 0:
+                continue
+
+            #gets the url from the tag
+            url = link.get('href')
+
+            #gets the id from the url
+            match = re.search(r"/(\d+)$", url)
+            id = match.group(1)
+
+            #gets the username from the span within the link
+            username = link.find('span').text
+
+            isBanned=False
+            if player.get('class') == ['has-banned']:
+                isBanned=True
+
+            #print(f"id: {id}; username: {username}; isbanned: {isBanned}")
+
+            player_info.append((id, username, isBanned))
+    return player_info
+        
 
 def get_matches_from_all_matches():
     """
@@ -142,11 +177,18 @@ def get_matches_from_player():
 
 
 match_url = "https://csstats.gg/match/218583641"
+#match_url = "https://csstats.gg/match/213035799"
 
+start = time.time()
 
 html = get_html(match_url)
+
+end = time.time()
+length = end - start
+print("get_html: ", length, "s")
+
 #print(html)
-html = get_players_from_match(html)
+print(get_players_from_match(html))
 #html_2_file(html, "match_cheater_condensed")
 
 

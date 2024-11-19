@@ -2,11 +2,13 @@ import cloudscraper
 import re
 from bs4 import BeautifulSoup
 import time
+from datetime import datetime, timedelta
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
 
 url = "https://csstats.gg"
+player_matches_filter = "?platforms=Valve&modes=Competitive~Premier#/matches"
 
 def get_cookie():
     cookie_str=""
@@ -132,30 +134,57 @@ def get_matches_from_all_matches(url):
     """
     html = get_html(url)
     soup = BeautifulSoup(html, 'html.parser')
-    table = soup.find("table", class_="table-striped")
+    table = soup.find("table", class_="table table-striped")
     table_body = table.findChild("tbody")
     rows = table_body.find_all(['tr'])
     match_hrefs = []
     for row in rows:
         match = re.search(r"(/match/\d+)", row["onclick"])
         match_hrefs.append(match.group(1))
-    print(match_hrefs)
     return match_hrefs
 
-def get_matches_from_player():
+def get_matches_from_player(player_id):
     """
         Takes the html string from a player site
         
-        Returns a list of tuples.  of cs stats match ids, that have been played in the last 30 days.
+        Returns a list of strings.  of cs stats match ids, that have been played in the last 30 days.
     """
+    html = get_html(url + "/player/" + player_id + player_matches_filter)
+    print(url + "/player/" + player_id + player_matches_filter)
+    soup = BeautifulSoup(html, 'html.parser')
+    match_list = soup.find("div", id="match-list-outer")
+    table = match_list.findChild("table", class_="table table-striped")
+    table_body = table.findChild("tbody")
+    rows = table_body.find_all(['tr'])
+    results = 0
+    for row in rows:
+        vals = row.find_all(["td"])
+        date_played = vals[0].get_text(strip=True).lower()
+        if "hours ago" in date_played or "minutes ago" in date_played or "hour ago" in date_played or "minute ago" in date_played:
+            results += 1
+        else:
+            date_str_cleaned = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_played)
+            date_obj = datetime.strptime(date_str_cleaned, "%a %d %b %y")
+            if date_obj <= datetime.now() - timedelta(days=30):
+                break # More than 30 days ago
+            else:
+                results += 1
+    match_hrefs = []
+    for row in rows:
+        match = re.search(r"(/match/\d+)", row["onclick"])
+        match_hrefs.append(match.group(1))
+        results -= 1
+        if results == 0:
+            break
+    return match_hrefs
 
 
-
-
+temp_player_id = "76561199096510286"
 match_url = "https://csstats.gg/match/218583641"
 all_matches_url = "https://csstats.gg/match"
 
-get_matches_from_all_matches(all_matches_url)
+# main_page_matches = get_matches_from_all_matches(all_matches_url)
+get_matches_from_player(temp_player_id)
 # html = get_html(match_url)
 #print(html)
 # html = get_players_from_match(html)

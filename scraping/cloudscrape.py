@@ -1,5 +1,6 @@
 import cloudscraper
 import re
+from bs4 import BeautifulSoup
 import time
 
 # https://pypi.org/project/cloudscraper/
@@ -62,6 +63,10 @@ def get_html(url):
 def url_2_file(url, filename):
     f = open("./tmp/"+filename+".html", "w")
     f.write(get_html(url))
+    
+def html_2_file(html, filename):
+    f = open("./tmp/"+filename+".html", "w")
+    f.write(html)
 
 def get_steam_link(url):
     """
@@ -106,13 +111,19 @@ def get_watch_demo_url(arg:str):
 
     return single_lookup_html(arg, "/watch/")
 
-def get_players_from_match():
+def get_players_from_match(html:str):
     """
         Takes the html string from a match site and returns a list of tuples. 
         
         The tuple contains the csstats id, the username, and a boolean determining whether a user has been vac banned.
     """
-    ...
+    soup = BeautifulSoup(html, 'html.parser')
+    #scoreboard = soup.find('table', id='match-scoreboard')
+    scoreboard = soup.find('table', class_="scoreboard", id="match-scoreboard")
+    players = scoreboard.find_all('a')
+    
+
+    print(players)
 
 def get_matches_from_all_matches():
     """
@@ -130,7 +141,14 @@ def get_matches_from_player():
 
 
 
-match_url = "https://csstats.gg/match/221226336"
+match_url = "https://csstats.gg/match/218583641"
+
 
 html = get_html(match_url)
-print(get_steam_link(get_watch_demo_url(match_url))[0])
+#print(html)
+html = get_players_from_match(html)
+#html_2_file(html, "match_cheater_condensed")
+
+
+#html = get_html(match_url)
+#print(get_steam_link(get_watch_demo_url(match_url))[0])

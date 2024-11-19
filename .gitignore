@@ -1,2 +1,5 @@
 *.txt
 scraping/tmp
+.vscode
+/demo_parsing/test.dem
+/demo_decoding/test.dem

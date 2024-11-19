@@ -1,11 +1,14 @@
 import cloudscraper
 import re
+from bs4 import BeautifulSoup
 import time
+from datetime import datetime, timedelta
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
 
 url = "https://csstats.gg"
+player_matches_filter = "?platforms=Valve&modes=Competitive~Premier#/matches"
 
 def get_cookie():
     cookie_str=""
@@ -62,6 +65,10 @@ def get_html(url):
 def url_2_file(url, filename):
     f = open("./tmp/"+filename+".html", "w")
     f.write(get_html(url))
+    
+def html_2_file(html, filename):
+    f = open("./tmp/"+filename+".html", "w")
+    f.write(html)
 
 def get_steam_link(url):
     """
@@ -106,31 +113,128 @@ def get_watch_demo_url(arg:str):
 
     return single_lookup_html(arg, "/watch/")
 
-def get_players_from_match():
+def get_players_from_match(html:str):
     """
         Takes the html string from a match site and returns a list of tuples. 
         
-        The tuple contains the csstats id, the username, and a boolean determining whether a user has been vac banned.
+        the tuples describe the players id, username, and ban status. 
+        The list is ordered in terms of teams. Splitting the list in half will
+        reveal the two opposing teams.
     """
-    ...
+    soup = BeautifulSoup(html, 'html.parser')
+    #scoreboard = soup.find('table', id='match-scoreboard')
+    scoreboard = soup.find('table', class_="scoreboard", id="match-scoreboard")
+    teams = scoreboard.find_all('tbody')
 
-def get_matches_from_all_matches():
-    """
-        Takes the html from the all matches page and returns a list of matches.
-    """
-    ...
+    teams = [teams[0], teams[2]]
 
-def get_matches_from_player():
+    player_info = []
+
+    for team in teams:
+
+        players = team.find_all('tr')
+
+        #players = list(team.children)
+        for player in players:
+
+            link = player.find('a')
+
+            if link is None or len(link) == 0:
+                continue
+
+            #gets the url from the tag
+            url = link.get('href')
+
+            #gets the id from the url
+            match = re.search(r"/(\d+)$", url)
+            id = match.group(1)
+
+            #gets the username from the span within the link
+            username = link.find('span').text
+
+            isBanned=False
+            if player.get('class') == ['has-banned']:
+                isBanned=True
+
+            #print(f"id: {id}; username: {username}; isbanned: {isBanned}")
+
+            player_info.append((id, username, isBanned))
+    return player_info
+        
+
+def get_matches_from_all_matches(html):
+    """
+        Takes the html from the all matches page and returns a list of match hrefs.
+        csstats.gg + one of these hrefs will go to match page.
+    """
+    soup = BeautifulSoup(html, 'html.parser')
+    table = soup.find("table", class_="table table-striped")
+    table_body = table.findChild("tbody")
+    rows = table_body.find_all(['tr'])
+    match_hrefs = []
+    for row in rows:
+        match = re.search(r"(/match/\d+)", row["onclick"])
+        match_id = match.group(1).split("/")[2]
+        match_hrefs.append(match_id)
+    return match_hrefs
+
+def get_matches_from_player(html:str):
     """
         Takes the html string from a player site
         
-        Returns a list of tuples.  of cs stats match ids, that have been played in the last 30 days.
+        Returns a list of strings.  of cs stats match ids, that have been played in the last 30 days.
     """
+    soup = BeautifulSoup(html, 'html.parser')
+    match_list = soup.find("div", id="match-list-outer")
+    table = match_list.findChild("table", class_="table table-striped")
+    table_body = table.findChild("tbody")
+    rows = table_body.find_all(['tr'])
+    results = 0
+    for row in rows:
+        vals = row.find_all(["td"])
+        date_played = vals[0].get_text(strip=True).lower()
+        if "hours ago" in date_played or "minutes ago" in date_played or "hour ago" in date_played or "minute ago" in date_played:
+            results += 1
+        else:
+            date_str_cleaned = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_played)
+            date_obj = datetime.strptime(date_str_cleaned, "%a %d %b %y")
+            if date_obj <= datetime.now() - timedelta(days=30):
+                break # More than 30 days ago
+            else:
+                results += 1
+    match_hrefs = []
+    for row in rows:
+        if results == 0:
+            break
+        match = re.search(r"(/match/\d+)", row["onclick"])
+        match_id = match.group(1).split("/")[2]
+        match_hrefs.append(match_id)
+        results -= 1
+    return match_hrefs
 
 
+match_url = "https://csstats.gg/match/218583641"
 
+#match_url = "https://csstats.gg/match/213035799"
 
-match_url = "https://csstats.gg/match/221226336"
-
+start = time.time()
 html = get_html(match_url)
-print(get_steam_link(get_watch_demo_url(match_url))[0])
+end = time.time()
+length = end - start
+print("get_html: ", length, "s")
+
+#print(html)
+print(get_players_from_match(html))
+
+
+
+
+
+temp_player_id = "76561199096510286"
+all_matches_url = "https://csstats.gg/match"
+
+#html = get_html(all_matches_url)
+# main_page_matches = get_matches_from_all_matches(all_matches_url)
+
+html = get_html(url + "/player/" + temp_player_id + player_matches_filter)
+print(get_matches_from_player(html))

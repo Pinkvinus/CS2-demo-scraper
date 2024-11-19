@@ -10,6 +10,7 @@ in pkgs.mkShell {
       python-pkgs.cloudscraper
       python-pkgs.requests
       python-pkgs.requests_toolbelt
+      python-pkgs.beautifulsoup4
     ]))
   ];
 }

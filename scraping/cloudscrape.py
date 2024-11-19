@@ -162,12 +162,11 @@ def get_players_from_match(html:str):
     return player_info
         
 
-def get_matches_from_all_matches(url):
+def get_matches_from_all_matches(html):
     """
         Takes the html from the all matches page and returns a list of match hrefs.
         csstats.gg + one of these hrefs will go to match page.
     """
-    html = get_html(url)
     soup = BeautifulSoup(html, 'html.parser')
     table = soup.find("table", class_="table table-striped")
     table_body = table.findChild("tbody")
@@ -175,17 +174,16 @@ def get_matches_from_all_matches(url):
     match_hrefs = []
     for row in rows:
         match = re.search(r"(/match/\d+)", row["onclick"])
-        match_hrefs.append(match.group(1))
+        match_id = match.group(1).split("/")[2]
+        match_hrefs.append(match_id)
     return match_hrefs
 
-def get_matches_from_player(player_id):
+def get_matches_from_player(html:str):
     """
         Takes the html string from a player site
         
         Returns a list of strings.  of cs stats match ids, that have been played in the last 30 days.
     """
-    html = get_html(url + "/player/" + player_id + player_matches_filter)
-    print(url + "/player/" + player_id + player_matches_filter)
     soup = BeautifulSoup(html, 'html.parser')
     match_list = soup.find("div", id="match-list-outer")
     table = match_list.findChild("table", class_="table table-striped")
@@ -209,20 +207,18 @@ def get_matches_from_player(player_id):
         if results == 0:
             break
         match = re.search(r"(/match/\d+)", row["onclick"])
-        match_hrefs.append(match.group(1))
+        match_id = match.group(1).split("/")[2]
+        match_hrefs.append(match_id)
         results -= 1
     return match_hrefs
 
 
-temp_player_id = "76561199096510286"
 match_url = "https://csstats.gg/match/218583641"
 
 #match_url = "https://csstats.gg/match/213035799"
 
 start = time.time()
-
 html = get_html(match_url)
-
 end = time.time()
 length = end - start
 print("get_html: ", length, "s")
@@ -230,16 +226,15 @@ print("get_html: ", length, "s")
 #print(html)
 print(get_players_from_match(html))
 
+
+
+
+
+temp_player_id = "76561199096510286"
 all_matches_url = "https://csstats.gg/match"
 
+#html = get_html(all_matches_url)
 # main_page_matches = get_matches_from_all_matches(all_matches_url)
-get_matches_from_player(temp_player_id)
-# html = get_html(match_url)
-#print(html)
-# html = get_players_from_match(html)
 
-#html_2_file(html, "match_cheater_condensed")
-
-
-#html = get_html(match_url)
-#print(get_steam_link(get_watch_demo_url(match_url))[0])
+html = get_html(url + "/player/" + temp_player_id + player_matches_filter)
+print(get_matches_from_player(html))

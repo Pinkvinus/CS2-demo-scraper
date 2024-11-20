@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 # The cloud scraper scrape object is identical to the session object in Requests
 
 url = "https://csstats.gg"
-player_matches_filter = "?platforms=Valve&modes=Competitive~Premier#/matches"
 
 def get_cookie():
     cookie_str=""
@@ -162,7 +161,7 @@ def get_players_from_match(html:str):
     return player_info
         
 
-def get_matches_from_all_matches(html):
+def get_matches_from_all_matches(html:str):
     """
         Takes the html from the all matches page and returns a list of match hrefs.
         csstats.gg + one of these hrefs will go to match page.
@@ -193,7 +192,7 @@ def get_matches_from_player(html:str):
     for row in rows:
         vals = row.find_all(["td"])
         date_played = vals[0].get_text(strip=True).lower()
-        if "hours ago" in date_played or "minutes ago" in date_played or "hour ago" in date_played or "minute ago" in date_played:
+        if "hours ago" in date_played or "minutes ago" in date_played or "hour ago" in date_played or "minute ago" in date_played or "day ago" in date_played:
             results += 1
         else:
             date_str_cleaned = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_played)
@@ -213,28 +212,25 @@ def get_matches_from_player(html:str):
     return match_hrefs
 
 
-match_url = "https://csstats.gg/match/218583641"
+#match_url = "https://csstats.gg/match/218583641"
 
 #match_url = "https://csstats.gg/match/213035799"
 
-start = time.time()
-html = get_html(match_url)
-end = time.time()
-length = end - start
-print("get_html: ", length, "s")
+#start = time.time()
+#html = get_html(match_url)
+#end = time.time()
+#length = end - start
+#print("get_html: ", length, "s")
 
 #print(html)
-print(get_players_from_match(html))
+#print(get_players_from_match(html))
 
 
-
-
-
-temp_player_id = "76561199096510286"
-all_matches_url = "https://csstats.gg/match"
+#temp_player_id = "76561199096510286"
+#all_matches_url = "https://csstats.gg/match"
 
 #html = get_html(all_matches_url)
-# main_page_matches = get_matches_from_all_matches(all_matches_url)
+#main_page_matches = get_matches_from_all_matches(all_matches_url)
 
-html = get_html(url + "/player/" + temp_player_id + player_matches_filter)
-print(get_matches_from_player(html))
+#html = get_html(url + "/player/" + temp_player_id + player_matches_filter)
+#print(get_matches_from_player(html))

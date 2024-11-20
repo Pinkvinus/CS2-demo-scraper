@@ -11,6 +11,7 @@ in pkgs.mkShell {
       python-pkgs.requests
       python-pkgs.requests_toolbelt
       python-pkgs.beautifulsoup4
+      python-pkgs.psycopg2
     ]))
   ];
 }

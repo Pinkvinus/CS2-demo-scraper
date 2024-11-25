@@ -236,12 +236,12 @@ def get_match_information(html:str):
 
 #match_url = "https://csstats.gg/match/218583641"
 
-match_url = "https://csstats.gg/match/213035799"
-match_url = "https://csstats.gg/match/224681309"# some random match used for testing
+# match_url = "https://csstats.gg/match/213035799"
+# match_url = "https://csstats.gg/match/224681309"# some random match used for testing
 # map, server, avg_rank
 #start = time.time()
-html = get_html(match_url)
-get_match_information(html)
+# html = get_html(match_url)
+# get_match_information(html)
 #end = time.time()
 #length = end - start
 #print("get_html: ", length, "s")

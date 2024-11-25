@@ -121,10 +121,9 @@ def get_players_from_match(html:str):
         reveal the two opposing teams.
     """
     soup = BeautifulSoup(html, 'html.parser')
-    #scoreboard = soup.find('table', id='match-scoreboard')
+
     scoreboard = soup.find('table', class_="scoreboard", id="match-scoreboard")
     teams = scoreboard.find_all('tbody')
-
     teams = [teams[0], teams[2]]
 
     player_info = []
@@ -210,6 +209,37 @@ def get_matches_from_player(html:str):
         match_hrefs.append(match_id)
         results -= 1
     return match_hrefs
+
+def info2string(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, playerinfo):
+
+    teamsize = int(len(playerinfo)/2)
+
+    print(teamsize)
+
+    cheater_names_str = ""
+    team1_string = ""
+    team2_string = ""
+
+    for i in range(0,teamsize):
+        player = playerinfo[i]
+        team1_string = team1_string + player[0] + ";"
+
+        if player[2] is True:
+            cheater_names_str = cheater_names_str + player[1] +";"
+
+    for i in range(teamsize, len(playerinfo)):
+
+        player = playerinfo[i]
+        team2_string = team2_string + player[0] + ";"
+
+        if player[2] is True:
+            cheater_names_str = cheater_names_str + player[1] +";"
+
+    infostring = match_id + "," + steamlink + "," + map + "," + server + "," + avg_rank + "," + team1_string + "," + team2_string + "," + cheater_names_str
+
+    return infostring
+
+
 
 
 #match_url = "https://csstats.gg/match/218583641"

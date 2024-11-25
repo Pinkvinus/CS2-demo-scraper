@@ -5,3 +5,4 @@ scraping/tmp
 /demo_decoding/test.dem
 *.csv
 /scraping/__pycache__
+.python-packages/

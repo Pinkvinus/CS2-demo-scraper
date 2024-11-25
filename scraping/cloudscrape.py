@@ -211,13 +211,37 @@ def get_matches_from_player(html:str):
         results -= 1
     return match_hrefs
 
+def get_match_information(html:str):
+    soup = BeautifulSoup(html, 'html.parser')
+    info_list = soup.find("div", id="match-info-inner")
+    infos = info_list.find_all('div', class_="info")
+    map = infos[2].get_text().strip()
+    server = infos[3].get_text().strip()
+    matchmaking_type = infos[1].get_text().strip()
+    is_premier = infos[1].get_text().strip().lower().find("premier matchmaking") != -1
+    rank = ""
+    if is_premier:
+        rank_spans = infos[4].find_all("span")
+        rank = int(rank_spans[1].get_text().strip().replace(",",""))
+    else:
+        rank = infos[4].find("img").get("title")
+
+    dict = {"map": map, "server": server, "rank": rank, "type": matchmaking_type}
+    print(dict)
+    return dict
+    
+    
+    
+
 
 #match_url = "https://csstats.gg/match/218583641"
 
-#match_url = "https://csstats.gg/match/213035799"
-
+# match_url = "https://csstats.gg/match/213035799"
+# match_url = "https://csstats.gg/match/224681309"# some random match used for testing
+# map, server, avg_rank
 #start = time.time()
-#html = get_html(match_url)
+# html = get_html(match_url)
+# get_match_information(html)
 #end = time.time()
 #length = end - start
 #print("get_html: ", length, "s")

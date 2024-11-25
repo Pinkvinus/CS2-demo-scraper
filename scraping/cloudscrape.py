@@ -217,15 +217,17 @@ def get_match_information(html:str):
     infos = info_list.find_all('div', class_="info")
     map = infos[2].get_text().strip()
     server = infos[3].get_text().strip()
+    matchmaking_type = infos[1].get_text().strip()
     is_premier = infos[1].get_text().strip().lower().find("premier matchmaking") != -1
     rank = ""
     if is_premier:
         rank_spans = infos[4].find_all("span")
-        rank = rank_spans[1].get_text().strip().replace(",","")
+        rank = int(rank_spans[1].get_text().strip().replace(",",""))
     else:
         rank = infos[4].find("img").get("title")
 
-    dict = {"map": map, "server": server, "rank": rank, "is_premier": is_premier}
+    dict = {"map": map, "server": server, "rank": rank, "type": matchmaking_type}
+    print(dict)
     return dict
     
     

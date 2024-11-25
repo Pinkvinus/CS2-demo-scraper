@@ -9,10 +9,17 @@ all_matches_url = "https://csstats.gg/match"
 player_matches_filter = "?platforms=Valve&modes=Competitive~Premier#/matches"
 
 
+
 def sleep():
     t = random.uniform(sleep_timer[0], sleep_timer[1])
     print(f"sleep for {t}")
     time.sleep(t)
+
+def append2file(str, filename):
+    f = open(filename, "a")
+    f.write(str + "\n")
+    f.close()
+
 
 html = cls.get_html(all_matches_url)
 main_page_matches = cls.get_matches_from_all_matches(html)
@@ -46,8 +53,7 @@ for match in main_page_matches:
 
             pmatch_html = cls.get_html(url)
             pplayers = cls.get_players_from_match(pmatch_html)
-            for pplayer in pplayers:
-                print(pplayer)
+            append2file(cls.info2string(pmatch_id, "url_here", "map_here", "server_here", "avgrank_here", pplayers), "test.csv")
     
     print("")
     sleep()

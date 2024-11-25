@@ -3,4 +3,5 @@ scraping/tmp
 .vscode
 /demo_parsing/test.dem
 /demo_decoding/test.dem
+*.csv
 /scraping/__pycache__

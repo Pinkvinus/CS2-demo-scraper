@@ -82,7 +82,7 @@ def append2file(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, 
         spamwriter = csv.writer(csvfile,)
         spamwriter.writerow([match_id, steamlink, map, server, avg_rank, type, team1_string, team2_string, cheater_names_str])
 
-init_seen_ids("all_clean.csv")
+init_seen_ids(get_newest_file_name())
 html = cls.get_html(all_matches_url)
 main_page_matches = cls.get_matches_from_all_matches(html)
 

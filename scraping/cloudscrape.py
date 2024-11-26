@@ -3,6 +3,7 @@ import re
 from bs4 import BeautifulSoup
 import time
 from datetime import datetime, timedelta
+from my_colors import mycolors
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
@@ -79,12 +80,10 @@ def get_steam_link(url):
     scraper = get_scraper()
     response = scraper.get(url, allow_redirects=False)  # Disable redirects to capture original headers
 
-    print(response)
-    print(type(response))
-
     if response.status_code != 302:
+        print(f"{mycolors.WARNING}response code: {response.status_code}")
         print("================================== cookie outdated ==================================")
-        input("update cookie and press Enter to continue...")
+        input("update cookie and press Enter to continue..." + mycolors.ENDC)
 
         return get_steam_link(url)
 
@@ -242,29 +241,3 @@ def get_match_information(html:str):
     dict = {"map": map, "server": server, "rank": rank, "type": matchmaking_type}
     print(dict)
     return dict
-
-
-#match_url = "https://csstats.gg/match/218583641"
-
-# match_url = "https://csstats.gg/match/213035799"
-# match_url = "https://csstats.gg/match/224681309"# some random match used for testing
-# map, server, avg_rank
-#start = time.time()
-# html = get_html(match_url)
-# get_match_information(html)
-#end = time.time()
-#length = end - start
-#print("get_html: ", length, "s")
-
-#print(html)
-#print(get_players_from_match(html))
-
-
-#temp_player_id = "76561199096510286"
-#all_matches_url = "https://csstats.gg/match"
-
-#html = get_html(all_matches_url)
-#main_page_matches = get_matches_from_all_matches(all_matches_url)
-
-#html = get_html(url + "/player/" + temp_player_id + player_matches_filter)
-#print(get_matches_from_player(html))

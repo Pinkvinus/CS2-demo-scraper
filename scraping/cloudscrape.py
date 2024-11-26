@@ -28,31 +28,32 @@ def get_cookie():
     
     return command, cookies
 
-# Reads the contents of the secret cookie.txt file, so the cookie isn't shared on github
-
-_ , cookies = get_cookie()
-
-headers = {
-    "Host": "csstats.gg",
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.5",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "DNT": "1",
-    "Sec-GPC": "1",
-    "Connection": "keep-alive",
-    "Upgrade-Insecure-Requests": "1",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "same-origin",
-    "Sec-Fetch-User": "?1",
-    "Priority": "u=1",
-    "Cookie": "; ".join([f"{k}={v}" for k, v in cookies.items()])  # Convert cookies dictionary to a string
-}
+def get_headers():
+    # Reads the contents of the secret cookie.txt file, so the cookie isn't shared on github
+    _ , cookies = get_cookie()
+    headers = {
+        "Host": "csstats.gg",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "DNT": "1",
+        "Sec-GPC": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-User": "?1",
+        "Priority": "u=1",
+        "Cookie": "; ".join([f"{k}={v}" for k, v in cookies.items()])  # Convert cookies dictionary to a string
+    }
+    return headers
 
 def get_scraper():
+    
     scraper = cloudscraper.create_scraper()
-    scraper.headers.update(headers) 
+    scraper.headers.update(get_headers()) 
 
     return scraper
 
@@ -77,8 +78,16 @@ def get_steam_link(url):
     # Send the GET request
     scraper = get_scraper()
     response = scraper.get(url, allow_redirects=False)  # Disable redirects to capture original headers
+
     print(response)
     print(type(response))
+
+    if response.status_code != 302:
+        print("================================== cookie outdated ==================================")
+        input("update cookie and press Enter to continue...")
+
+        return get_steam_link(url)
+
 
     # Check for the Steam link in the response headers
     steam_link = response.headers.get('Location')
@@ -160,7 +169,6 @@ def get_players_from_match(html:str):
             player_info.append((id, username, isBanned))
     return player_info
         
-
 def get_matches_from_all_matches(html:str):
     """
         Takes the html from the all matches page and returns a list of match hrefs.
@@ -211,40 +219,12 @@ def get_matches_from_player(html:str):
         results -= 1
     return match_hrefs
 
-
-def info2string(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, type:str, playerinfo):
-
-    teamsize = int(len(playerinfo)/2)
-
-    print(teamsize)
-
-    cheater_names_str = ""
-    team1_string = ""
-    team2_string = ""
-
-    for i in range(0,teamsize):
-        player = playerinfo[i]
-        team1_string = team1_string + player[0] + ";"
-
-        if player[2] is True:
-            cheater_names_str = cheater_names_str + player[1] +";"
-
-    for i in range(teamsize, len(playerinfo)):
-
-        player = playerinfo[i]
-        team2_string = team2_string + player[0] + ";"
-
-        if player[2] is True:
-            cheater_names_str = cheater_names_str + player[1] +";"
-
-    infostring = match_id + "," + steamlink + "," + map + "," + server + "," + avg_rank + "," + type + "," + team1_string + "," + team2_string + "," + cheater_names_str
-
-    return infostring
-
-
-
-
 def get_match_information(html:str):
+    """
+        parameters: Html from a match site
+        returns: a dictionary with match information like: map, server, average rank, and match making type
+    """
+
     soup = BeautifulSoup(html, 'html.parser')
     info_list = soup.find("div", id="match-info-inner")
     infos = info_list.find_all('div', class_="info")

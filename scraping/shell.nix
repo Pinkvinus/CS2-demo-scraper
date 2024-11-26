@@ -14,4 +14,11 @@ in pkgs.mkShell {
       python-pkgs.psycopg2
     ]))
   ];
+
+  shellHook = ''
+    export PIP_TARGET="$PWD/.python-packages"
+    export PYTHONPATH="$PIP_TARGET:$PYTHONPATH"
+    mkdir -p $PIP_TARGET
+    pip install --no-cache-dir csgo
+  '';
 }

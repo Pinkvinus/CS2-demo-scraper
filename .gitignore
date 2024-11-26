@@ -6,3 +6,4 @@ scraping/tmp
 *.csv
 /scraping/__pycache__
 .python-packages/
+.venv

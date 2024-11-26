@@ -52,8 +52,11 @@ for match in main_page_matches:
             print(url)
 
             pmatch_html = cls.get_html(url)
+
             pplayers = cls.get_players_from_match(pmatch_html)
-            append2file(cls.info2string(pmatch_id, "url_here", "map_here", "server_here", "avgrank_here", pplayers), "test.csv")
+            steamlink = cls.get_steam_link(cls.get_watch_demo_url(pmatch_html))
+            match_info = cls.get_match_information(pmatch_html)
+            append2file(cls.info2string(pmatch_id, steamlink, match_info["map"], match_info["server"], match_info["rank"], match_info["type"], pplayers), "test.csv")
     
     print("")
     sleep()

@@ -78,6 +78,7 @@ def get_steam_link(url):
     scraper = get_scraper()
     response = scraper.get(url, allow_redirects=False)  # Disable redirects to capture original headers
     print(response)
+    print(type(response))
 
     # Check for the Steam link in the response headers
     steam_link = response.headers.get('Location')
@@ -211,7 +212,7 @@ def get_matches_from_player(html:str):
     return match_hrefs
 
 
-def info2string(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, playerinfo):
+def info2string(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, type:str, playerinfo):
 
     teamsize = int(len(playerinfo)/2)
 
@@ -236,7 +237,7 @@ def info2string(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, 
         if player[2] is True:
             cheater_names_str = cheater_names_str + player[1] +";"
 
-    infostring = match_id + "," + steamlink + "," + map + "," + server + "," + avg_rank + "," + team1_string + "," + team2_string + "," + cheater_names_str
+    infostring = match_id + "," + steamlink + "," + map + "," + server + "," + avg_rank + "," + type + "," + team1_string + "," + team2_string + "," + cheater_names_str
 
     return infostring
 

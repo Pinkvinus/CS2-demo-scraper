@@ -3,6 +3,7 @@ import random
 import time
 import csv
 from datetime import datetime
+import os
 
 
 sleep_timer = (1,2)
@@ -10,8 +11,29 @@ site = "https://csstats.gg"
 all_matches_url = "https://csstats.gg/match"
 player_matches_filter = "?platforms=Valve&modes=Competitive~Premier#/matches"
 
-csv_file_name = "cs_scrape_" + str(datetime.now()) + ".csv"
+def write_old_data_to_new_file(old, new):
+    with open(old, 'r') as oldfile:
+        with open(new, 'w') as newfile:
+            reader = csv.reader(oldfile)
+            writer = csv.writer(newfile)
+            
+            for row in reader:
+                writer.writerow(row)
+    oldfile.close()
+    newfile.close()
 
+def get_newest_file_name():
+    dir_list = os.listdir()
+    filtered_list = [k for k in dir_list if 'cs_scrape_' in k]
+    if len(filtered_list) > 0:
+        filtered_list.sort(reverse=True)
+        return filtered_list[0]
+    return None
+
+new_csv_file_name = "cs_scrape_" + str(datetime.now()) + ".csv"
+existing_csv = get_newest_file_name()
+if existing_csv is not None:
+    write_old_data_to_new_file(existing_csv, new_csv_file_name)
 
 def sleep():
     t = random.uniform(sleep_timer[0], sleep_timer[1])
@@ -44,7 +66,7 @@ def append2file(match_id:str, steamlink:str, map:str, server:str, avg_rank:str, 
         if player[2] is True:
             cheater_names_str = cheater_names_str + player[1] + seperator
 
-    with open(csv_file_name, 'a', newline='') as csvfile:
+    with open(new_csv_file_name, 'a', newline='') as csvfile:
         spamwriter = csv.writer(csvfile,)
         spamwriter.writerow([match_id, steamlink, map, server, avg_rank, type, team1_string, team2_string, cheater_names_str])
 

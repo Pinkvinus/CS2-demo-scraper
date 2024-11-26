@@ -81,7 +81,6 @@ for match in main_page_matches:
 
             pplayers = cls.get_players_from_match(pmatch_html)
             steamlink = cls.get_steam_link(cls.get_watch_demo_url(pmatch_html))
-            #steamlink = ["lllllllink", "sldkfj"]
             match_info = cls.get_match_information(pmatch_html)
             append2file(pmatch_id,steamlink[0],match_info["map"],match_info["server"],str(match_info["rank"]), match_info["type"], pplayers)
     

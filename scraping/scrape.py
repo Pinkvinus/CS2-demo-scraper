@@ -36,6 +36,13 @@ new_csv_file_name = "cs_scrape_" + str(datetime.now()) + ".csv"
 existing_csv = get_newest_file_name()
 if existing_csv is not None:
     write_old_data_to_new_file(existing_csv, new_csv_file_name)
+else:
+    with open(new_csv_file_name, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames = ["match_id", "steamlink", "map", "server", "avg_rank", "type", "team1_string", "team2_string", "cheater_names_str"])
+        writer.writeheader()
+        csvfile.close()
+
+
 
 def sleep():
     t = random.uniform(sleep_timer[0], sleep_timer[1])

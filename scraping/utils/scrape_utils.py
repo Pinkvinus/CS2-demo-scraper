@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 import time
 from datetime import datetime, timedelta
-from my_colors import mycolors
+from .shell_colors import shell_colors as colors
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
@@ -81,9 +81,9 @@ def get_steam_link(url):
     response = scraper.get(url, allow_redirects=False)  # Disable redirects to capture original headers
 
     if response.status_code != 302:
-        print(f"{mycolors.WARNING}response code: {response.status_code}")
+        print(f"{colors.WARNING}response code: {response.status_code}")
         print("================================== cookie outdated ==================================")
-        input("update cookie and press Enter to continue..." + mycolors.ENDC)
+        input("update cookie and press Enter to continue..." + colors.ENDC)
 
         return get_steam_link(url)
 

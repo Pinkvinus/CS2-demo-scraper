@@ -4,6 +4,6 @@ scraping/tmp
 /demo_parsing/test.dem
 /demo_decoding/test.dem
 *.csv
-/scraping/__pycache__
 .python-packages/
 .venv
+__pycache__/

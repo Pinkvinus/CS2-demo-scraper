@@ -1,9 +1,9 @@
-import cloudscrape as cls
+from utils import scrape_utils as cls
 import random
 import time
 import csv
 from datetime import datetime
-from my_colors import mycolors
+from utils.shell_colors import shell_colors as colors
 import os
 
 sleep_timer = (1,2)
@@ -87,20 +87,20 @@ html = cls.get_html(all_matches_url)
 main_page_matches = cls.get_matches_from_all_matches(html)
 
 for match in main_page_matches:
-    print(f"{mycolors.HEADER}MATCH : {match} ======================={mycolors.ENDC}")
+    print(f"{colors.HEADER}MATCH : {match} ======================={colors.ENDC}")
 
     url = all_matches_url+"/"+match
-    print(f"url: {mycolors.OKBLUE}{url}{mycolors.ENDC}")
+    print(f"url: {colors.OKBLUE}{url}{colors.ENDC}")
 
     phtml = cls.get_html(url)
     players = cls.get_players_from_match(phtml)
 
     for player in players:
         sleep()
-        print(f"{mycolors.OKCYAN}{player}{mycolors.ENDC}")
+        print(f"{colors.OKCYAN}{player}{colors.ENDC}")
 
         url = site+"/player/"+player[0]+player_matches_filter
-        print(f"url: {mycolors.OKBLUE}{url}{mycolors.ENDC}")
+        print(f"url: {colors.OKBLUE}{url}{colors.ENDC}")
 
         player_page_html = cls.get_html(url)
         player_matches = cls.get_matches_from_player(player_page_html)
@@ -108,7 +108,7 @@ for match in main_page_matches:
         for pmatch_id in player_matches:
 
             if pmatch_id in seen_ids:
-                print(f"{mycolors.WARNING}Match ({pmatch_id}) already seen. Skipping{mycolors.ENDC}")
+                print(f"{colors.WARNING}Match ({pmatch_id}) already seen. Skipping{colors.ENDC}")
                 continue
 
             seen_ids.add(pmatch_id)
@@ -116,7 +116,7 @@ for match in main_page_matches:
             sleep()
 
             url = site + "/match/" + pmatch_id
-            print(f"url: {mycolors.OKBLUE}{url}{mycolors.ENDC}")
+            print(f"url: {colors.OKBLUE}{url}{colors.ENDC}")
 
             pmatch_html = cls.get_html(url)
 

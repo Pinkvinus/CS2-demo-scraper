@@ -15,6 +15,7 @@ in pkgs.mkShell {
       python-pkgs.pandas
       python-pkgs.ipykernel
       python-pkgs.matplotlib
+      python-pkgs.pygame
     ]))
   ];
 

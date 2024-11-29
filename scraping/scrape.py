@@ -6,7 +6,7 @@ from datetime import datetime
 from utils.shell_colors import shell_colors as colors
 import os
 
-sleep_timer = (1,2)
+sleep_timer = (5,10)
 site = "https://csstats.gg"
 all_matches_url = "https://csstats.gg/match"
 player_matches_filter = "?platforms=Valve&modes=Competitive~Premier#/matches"

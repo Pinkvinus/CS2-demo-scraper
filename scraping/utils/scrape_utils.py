@@ -4,12 +4,14 @@ from bs4 import BeautifulSoup
 import time
 from datetime import datetime, timedelta
 from .shell_colors import shell_colors as colors
+import pygame
 import math
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
 
 url = "https://csstats.gg"
+cookie_timer = time.time()
 
 def get_cookie():
     cookie_str=""
@@ -84,6 +86,15 @@ def get_steam_link(url):
     if response.status_code != 302:
         print(f"{colors.WARNING}response code: {response.status_code}")
         print("================================== cookie outdated ==================================")
+        print(f"it has been {time.time()-cookie_timer} s where the cookie was in use")
+        cookie_timer = time.time()
+        pygame.init()
+        pygame.mixer.init()
+        pygame.mixer.music.load('./Oh-My-Pc-Sound-Effect.mp3')
+        pygame.mixer.music.play()
+
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
         input("update cookie and press Enter to continue..." + colors.ENDC)
 
         return get_steam_link(url)

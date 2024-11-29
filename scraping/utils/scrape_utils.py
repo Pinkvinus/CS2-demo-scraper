@@ -5,6 +5,7 @@ import time
 from datetime import datetime, timedelta
 from .shell_colors import shell_colors as colors
 import pygame
+import math
 
 # https://pypi.org/project/cloudscraper/
 # The cloud scraper scrape object is identical to the session object in Requests
@@ -242,10 +243,13 @@ def get_match_information(html:str):
     server = infos[3].get_text().strip()
     matchmaking_type = infos[1].get_text().strip()
     is_premier = infos[1].get_text().strip().lower().find("premier matchmaking") != -1
-    rank = ""
     if is_premier:
         rank_spans = infos[4].find_all("span")
-        rank = int(rank_spans[1].get_text().strip().replace(",",""))
+        try:
+            rank = int(rank_spans[1].get_text().strip().replace(",",""))
+        except:
+            rank = math.nan
+            
     else:
         rank = infos[4].find("img").get("title")
 

@@ -2,8 +2,9 @@ from csgo.sharecode import decode
 import csv
 import subprocess
 import os
-from .shell_colors import shell_colors as colors
+from shell_colors import shell_colors as colors
 import pandas as pd
+from collections import Counter
 
 steamlink = "steam://rungame/730/76561202255233023/+csgo_download_match%20CSGO-38jZH-2shwO-Pj2A7-x5qsy-fqbNE"
 
@@ -19,7 +20,6 @@ class column_header:
     cheater_names = "cheater_names_str"
     demo_file_name = "demo_file_name"
     
-
 def steamlink_to_sharecode(url:str):
     return url.split("%20")[1]
 
@@ -152,3 +152,36 @@ def add_filename_to_csv(sharecodes:list, demos_path:str, csvs_file_path:str):
             print(f"Filtered list: {filtered_list}")
             print(f"Sharecode: {s}")
     df.to_csv(latest_csv, index=False)
+
+def get_duplicate_ids(filepath):
+    # Read the first column (IDs)
+    with open(filepath, 'r') as file:
+        reader = csv.reader(file)
+        ids = [row[0] for row in reader]
+
+    # Count occurrences of each ID
+    id_counts = Counter(ids)
+
+    # Find duplicates
+    duplicates = [id for id, count in id_counts.items() if count > 1]
+
+    if duplicates:
+        print("Duplicate IDs found:", duplicates)
+    else:
+        print("No duplicate IDs found.")
+
+def remove_duplicate_ids(in_filepath:str, out_filepath:str):
+
+    # Track seen IDs to filter duplicates
+    seen_ids = set()
+
+    with open(in_filepath, 'r') as infile, open(out_filepath, 'w', newline='') as outfile:
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile)
+        
+        for row in reader:
+            if row[0] not in seen_ids:
+                writer.writerow(row)  # Write only unique rows
+                seen_ids.add(row[0])
+
+    print(f"Duplicates removed. Output saved to {out_filepath}")

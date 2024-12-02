@@ -11,7 +11,7 @@ import math
 # The cloud scraper scrape object is identical to the session object in Requests
 
 url = "https://csstats.gg"
-cookie_timer = time.time()
+#cookie_timer = time.time()
 
 def get_cookie():
     cookie_str=""
@@ -86,8 +86,8 @@ def get_steam_link(url):
     if response.status_code != 302:
         print(f"{colors.WARNING}response code: {response.status_code}")
         print("================================== cookie outdated ==================================")
-        print(f"it has been {time.time()-cookie_timer} s where the cookie was in use")
-        cookie_timer = time.time()
+        #print(f"it has been {time.time()-cookie_timer} s where the cookie was in use")
+        #cookie_timer = time.time()
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load('./Oh-My-Pc-Sound-Effect.mp3')

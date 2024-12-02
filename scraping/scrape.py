@@ -32,7 +32,10 @@ def get_newest_file_name():
         return filtered_list[0]
     return None
 
-new_csv_file_name = "cs_scrape_" + str(datetime.now()) + ".csv"
+# This new way normalizes the datetime stamp for both linux and windows
+# new_csv_file_name = "cs_scrape_" + str(datetime.now()) + ".csv"
+timestamp = datetime.now().strftime("%Y-%m-%d %H_%M_%S.%f")
+new_csv_file_name = f"cs_scrape_{timestamp}.csv"
 existing_csv = get_newest_file_name()
 if existing_csv is not None:
     write_old_data_to_new_file(existing_csv, new_csv_file_name)

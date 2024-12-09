@@ -5,6 +5,7 @@ import os
 from shell_colors import shell_colors as colors
 import pandas as pd
 from collections import Counter
+from datetime import datetime
 
 steamlink = "steam://rungame/730/76561202255233023/+csgo_download_match%20CSGO-38jZH-2shwO-Pj2A7-x5qsy-fqbNE"
 
@@ -135,6 +136,8 @@ def add_filename_to_csv(sharecodes:list, demos_path:str, csvs_file_path:str):
         functionality:
             - gets the names of the newly downloaded demo files and adds them to the correct rows in the csv file
     """
+    timestamp = datetime.now().strftime("%Y-%m-%d %H_%M_%S.%f")
+    new_csv_file_name = f"cs_scrape_{timestamp}.csv"
     files_list = os.listdir(demos_path)
     latest_csv = get_newest_file_name(csvs_file_path)
     df = pd.read_csv(latest_csv)
@@ -151,7 +154,8 @@ def add_filename_to_csv(sharecodes:list, demos_path:str, csvs_file_path:str):
             print(f"{colors.FAIL}Duplicates found{colors.ENDC}")
             print(f"Filtered list: {filtered_list}")
             print(f"Sharecode: {s}")
-    df.to_csv(latest_csv, index=False)
+    df.to_csv(csvs_file_path + "/" + new_csv_file_name, index=False)
+    # df.to_csv(latest_csv, index=False)
 
 def get_duplicate_ids(filepath):
     # Read the first column (IDs)

@@ -2,7 +2,7 @@ from csgo.sharecode import decode
 import csv
 import subprocess
 import os
-from shell_colors import shell_colors as colors
+from .shell_colors import shell_colors as colors
 import pandas as pd
 from collections import Counter
 from datetime import datetime
@@ -155,7 +155,6 @@ def add_filename_to_csv(sharecodes:list, demos_path:str, csvs_file_path:str):
             print(f"Filtered list: {filtered_list}")
             print(f"Sharecode: {s}")
     df.to_csv(csvs_file_path + "/" + new_csv_file_name, index=False)
-    # df.to_csv(latest_csv, index=False)
 
 def get_duplicate_ids(filepath):
     # Read the first column (IDs)
